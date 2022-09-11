@@ -83,7 +83,7 @@ export default {
         this.SET_TOKEN(data.data)
         // 把token存进vuex
         // 跳转路由
-        this.$router.push('/profile')
+        this.$router.push('/my')
         this.$toast.success('登录成功')
         // 万能验证码 246810
       } catch (error) {

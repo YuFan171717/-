@@ -8,6 +8,11 @@
   </head>
   <body></body>
   <script>
+    // instanceof 判断对象是都在构造函数的原型链上
+    // typeof 判断类型字符串,不能判断null
+    // Object.prototype.toString.call(数据)  可以判断任何数据，返回值是 '[object 数据类型]'  ，比如数字类型返回值是 '[object Number]'
+
+    //Object.prototype.hasOwnProperty.call(对象，属性)  查询该对象是否包含该属性
     function isValueEqueal(a, b) {
       // if (a === null || b === null) return false
       // if (a instanceof Array && b instanceof Array) {
@@ -29,6 +34,21 @@
     console.log(isValueEqueal({ name: '张三' }, { name: '张三' })) // true
     console.log(isValueEqueal([1, 2, 3], [1, 2, 3])) // true
     console.log(isValueEqueal([1, { name: '张三' }], [1, { name: '张三' }])) // true
-    console.log(isValueEqueal({ a: [1, 2, 3] }, { a: [1, 2, 3] })) // true
+    console.log(
+      isValueEqueal(
+        {
+          a: [1, 2, 3],
+          sum() {
+            b = 1
+          }
+        },
+        {
+          a: [1, 2, 3],
+          sum() {
+            b = 2
+          }
+        }
+      )
+    ) // true
   </script>
 </html>
