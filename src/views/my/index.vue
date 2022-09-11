@@ -127,7 +127,8 @@ export default {
       } catch (error) {
         // js导致 或者 axios导致的
         // js和 状态码400,506提示给程序员。401提示给用户重新登录
-        if (error.response && error.response.status === 401) {
+        //   if (error.response && error.response.status === 401)  下面是可选链操作 意思和注释一样
+        if (error.response?.status === 401) {
           this.$toast.fail('用户认证失败，请重新登录')
         } else {
           throw error
