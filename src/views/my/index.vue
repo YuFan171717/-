@@ -116,7 +116,7 @@ export default {
         message: '是否确认退出该账户'
       })
 
-      this.$store.commit('SET_TOzKEN', {})
+      this.$store.commit('SET_TOKEN', {})
     },
     // 获取用户信息
     async getUserInfo() {
