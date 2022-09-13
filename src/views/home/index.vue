@@ -11,8 +11,19 @@
       <van-tab v-for="item in channels" :key="item.id" :title="item.name">
         <article-list :id="item.id"></article-list>
       </van-tab>
-
-      <span class="toutiao toutiao-gengduo"></span>
+      <span class="toutiao toutiao-gengduo" @click="isShow = true"></span>
+      <van-popup
+        v-model="isShow"
+        position="bottom"
+        :style="{ height: '100%' }"
+        closeable
+        close-icon-position="top-left"
+      >
+        <channel-edit
+          :myChannels="channels"
+          @change-active=";[(isShow = false), (active = $event)]"
+        ></channel-edit>
+      </van-popup>
     </van-tabs>
   </div>
 </template>
@@ -22,17 +33,20 @@ import { getChannelAPI } from '@/api'
 
 // 引入组件
 import ArticleList from './components/ArticleList.vue'
+import ChannelEdit from './components/ChannelEdit.vue'
 export default {
   created() {
     this.getChannel()
   },
   components: {
-    ArticleList
+    ArticleList,
+    ChannelEdit
   },
   data() {
     return {
       active: 0,
-      channels: []
+      channels: [],
+      isShow: false
     }
   },
   methods: {
@@ -46,7 +60,7 @@ export default {
         this.channels = data.data.channels
       } catch (error) {
         // js 错误给程序员  ,axios 状态码提示用户刷新
-        if (error.response) {
+        if (!error.response) {
           throw error
         } else {
           const status = error.response.status

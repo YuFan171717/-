@@ -80,6 +80,7 @@ export default {
       try {
         // vant 组件的 submit 事件只有在校验通过后才会触发
         const { data } = await login(this.mobile, this.code)
+        console.log(data)
         this.SET_TOKEN(data.data)
         // 把token存进vuex
         // 跳转路由

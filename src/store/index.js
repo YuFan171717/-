@@ -1,5 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+//  安装yarn add vuex@3.6.2
+// 配置好后引入到main。中
 
 // 引入持久化包
 import createPersistedstate from 'vuex-persistedstate'

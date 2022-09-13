@@ -37,6 +37,7 @@
 </template>
 
 <script>
+import dayjs from '@/utils/dayjs'
 export default {
   props: {
     article: {
@@ -49,7 +50,9 @@ export default {
     label() {
       /* eslint-disable */
       const { aut_name, comm_count, pubdate } = this.article
-      return `${aut_name} ${comm_count} 评论 ${pubdate}`
+
+      // 调用dayjs，把绝对时间变成相对时间
+      return `${aut_name} ${comm_count} 评论 ${dayjs(pubdate).fromNow()}`
     }
   }
 }
