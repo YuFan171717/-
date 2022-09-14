@@ -59,9 +59,10 @@ export default new Vuex.Store({
       key: 'HEIMATOUTIAO_TOKEN',
       // storage: window.sessionStorage,
       reducer(state) {
-        const { token } = state
+        const { token, myChannels } = state
         console.log(token)
-        return { token }
+        // 必须return 一个对象
+        return { token, myChannels }
       }
     })
   ],
@@ -69,7 +70,7 @@ export default new Vuex.Store({
   state: {
     // token: JSON.parse(window.localStorage.getItem('HEIMATOUTIAO_TOKEN')) || {}
     token: {},
-    a: 1
+    myChannels: []
   },
   getters: {
     isLogin(state) {
@@ -84,6 +85,9 @@ export default new Vuex.Store({
       // token持久存在本地存储
       // payload这个参数就是穿过来的参数
       // window.localStorage.setItem('HEIMATOUTIAO_TOKEN', JSON.stringify(payload))
+    },
+    SET_MY_CHANNELS(state, channels) {
+      state.myChannels = channels
     }
   }
 })

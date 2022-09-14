@@ -1,13 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-  </head>
-  <body></body>
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
   <script>
+    // polyfill: 垫片
+
     // 1. executor 执行器函数
     // 2. resolve : 把promise变成成功态, reject:把promise变成失败态
     // 3. value: 记录成功的原因 reason:失败的原因
@@ -16,12 +20,18 @@
     // 6.当promise在执行过程当中, 任何错误都会导致promise变成失败态
     // 7. promise必须有then方法, onFulfilled:成功的回调, onRejected失败的回调
     // 8. 设计模式: 发布订阅模式: 订阅一些行为, 再在合适时机去执行(发布)
-    //   - 最简单: DOM事件
+    //   - 最简单: DOM事件 
     //   - vue当中的自定义事件: $emit
-    //   - eventBus
+    //   - eventBus 
     //   - promise 异步的时候
+    // 9. promise除了链式调用以外, 还可以多次调用
+    // 10. promise的链式调用
+    // 11. then方法出错, 在下一个then中能够拿到错误的原因
+    // 12. then方法回调的是异步的
+    // 13. then方法回调renturn的结果, 一定能在下一个then的成功的回调接收
+
     const PENDING = 'pending'
-    const FUFILED = 'fulfilled'
+    const FUFILLED = 'fulfilled'
     const REJECTED = 'rejected'
     class Promise {
       value
@@ -29,75 +39,107 @@
       status = PENDING
       onFulfilledCallBacks = []
       onRejectedCallBacks = []
+
       constructor(executor) {
-        const resolve = (val) => {
+        const resolve = (value) => {
           if (this.status === PENDING) {
-            this.value = val
-            this.status = FUFILED
-            this.onFulfilledCallBacks.forEach((item) => item())
+            this.value = value
+            this.status = FUFILLED
+            this.onFulfilledCallBacks.forEach(cb => cb())
           }
         }
         const reject = (reason) => {
           if (this.status === PENDING) {
             this.reason = reason
             this.status = REJECTED
-            this.onRejectedCallBacks.forEach((item) => item())
+            this.onRejectedCallBacks.forEach(cb => cb())
           }
         }
+
         try {
           executor(resolve, reject)
         } catch (error) {
           reject(error)
         }
       }
+
       then(onFulfilled, onRejected) {
-        if (this.status === FUFILED) {
-          onFulfilled(this.value)
-        }
-        if (this.status === REJECTED) {
-          onRejected(this.reason)
-        }
-        if (this.status === PENDING) {
-          this.onRejectedCallBacks.push(() => {
-            onFulfilled(this.reason)
-          })
-          this.onFulfilledCallBacks.push(() => {
-            onRejected(this.value)
-          })
-        }
+        const p2 = new Promise((resolve, reject) => {
+          if (this.status === FUFILLED) {
+            queueMicrotask(() => {
+              try {
+                const x = onFulfilled(this.value)
+                resolve(x)
+              } catch (error) {
+                reject(error)
+              }
+            })
+          }
+
+          if (this.status === REJECTED) {
+            queueMicrotask(() => {
+              try {
+                const x = onRejected(this.reason)
+                resolve(x)
+              } catch (error) {
+                reject(error)
+              }
+            })
+          }
+
+          if (this.status === PENDING) {
+            // 异步
+            // 订阅
+            // this.onFulfilled = onFulfilled
+            // this.onRejected = onRejected
+            this.onFulfilledCallBacks.push(() => {
+              queueMicrotask(() => {
+                // 多写逻辑
+                try {
+                  const x = onFulfilled(this.value)
+                  resolve(x)
+                } catch (error) {
+                  reject(error)
+                }
+              })
+            })
+
+            this.onRejectedCallBacks.push(() => {
+              queueMicrotask(() => {
+                try {
+                  const x = onRejected(this.reason)
+                  resolve(x)
+                } catch (error) {
+                  reject(error)
+                }
+              })
+            })
+          }
+        })
+        return p2
       }
     }
-
-    // const p = new Promise(() => {})
-    // const p2 = new Promise((resolve) => {
-    //   resolve()
-    // })
-    // const p3 = new Promise((resolve, reject) => {
-    //   reject()
-    // })
-
-    // console.log('p1', p, 'p2', p2, 'p3', p3)
-    console.log(
-      new Promise((resolve, reject) => {
-        reject('失败')
-        resolve('成功')
-      })
-    )
-
     const p = new Promise((resolve, reject) => {
-      setTimeout(() => {
-        reject('成功')
-      }, 3000)
+      rejcet()
     })
 
-    p.then(
-      (res) => console.log(res),
-      (err) => console.log(err)
+    const p1 = p.then(
+      () => {
+        return '成功'
+      },
+      () => {
+        return '失败'
+      }
     )
 
-    p.then(
-      (res) => console.log('haha'),
-      (err) => console.log(err)
+    p1.then(
+      (res) => console.log('第二次then的成功回调', res),
+      (error) => console.log('第二次then的失败回调', error)
     )
+
+
+
   </script>
+</body>
+
 </html>
