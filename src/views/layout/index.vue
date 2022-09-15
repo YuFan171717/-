@@ -1,7 +1,9 @@
 <template>
   <div>
     <!-- 二级路由 -->
-    <router-view></router-view>
+    <transition name="van-slide-left" mode="out-in">
+      <router-view></router-view>
+    </transition>
     <!-- 导航区 -->
 
     <van-tabbar route>

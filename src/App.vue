@@ -1,6 +1,9 @@
 <template>
   <div>
-    <router-view></router-view>
+    <transition name="van-slide-left" mode="out-in">
+      <router-view></router-view>
+    </transition>
+
     <!-- <h1>{{ $store.state.count }}</h1> -->
     <!-- <h1>{{ count }}</h1> -->
     <!-- <h1>count的十倍------{{ $store.getters.sum }}</h1> -->
